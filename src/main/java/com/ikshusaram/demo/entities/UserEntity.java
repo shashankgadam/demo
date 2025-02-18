@@ -16,6 +16,7 @@ public class UserEntity implements Serializable {
 	private String username;
 	private String password;
 	private String ip;
+	private String email;
 	private String device_token;
 	private String last_login;
 	private boolean is_banned;
@@ -29,6 +30,14 @@ public class UserEntity implements Serializable {
 		return id;
 	}
 
+	public String getEmail(){
+		return email;
+	}
+
+	public void setEmail(String email){
+		this.email = email;
+	}
+	
 	public void setId(int id) {
 		this.id = id;
 	}
