@@ -19,27 +19,28 @@ import jakarta.servlet.Filter;
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
+
+    private static final String[] WHITELIST_URL = {"/user/login", "/user/add"}; 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter){
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable()) // Disable CSRF
             .cors(cors -> {}) // Enable CORS (optional)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight requests
-                // .requestMatchers(WHITELIST_URL).permitAll() // Uncomment if needed
-                .anyRequest().authenticated()
+                .requestMatchers(WHITELIST_URL).permitAll() // Allow login without authentication
+                .anyRequest().authenticated() // Secure other endpoints
             )
-            .addFilterBefore((Filter) jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter
-    
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter
+
         return http.build();
     }
-    
 
     @Bean
     public PasswordEncoder passwordEncoder() {

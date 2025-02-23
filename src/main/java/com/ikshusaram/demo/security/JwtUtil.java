@@ -1,8 +1,7 @@
 package com.ikshusaram.demo.security;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
+import org.springframework.stereotype.Component;
 import java.util.*;
 
 import io.github.cdimascio.dotenv.Dotenv;
@@ -12,16 +11,17 @@ import com.ikshusaram.demo.entities.UserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-
+@Component
 public class JwtUtil {
 
-    private Dotenv dotenv;
-    private final String SECRET_KEY = (String) dotenv.get("SECRET_KEY"); // This needs to be in .env
+    private final Dotenv dotenv;
+    private final String SECRET_KEY;
     private final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 1; // single day
     private final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7 days
-
+    
     public JwtUtil(Dotenv dotenv){
-        this.dotenv = dotenv; 
+        this.dotenv = Dotenv.load(); // Load environment variables
+        this.SECRET_KEY = this.dotenv.get("JWT_SECRET"); // This needs to be in .env
     }
     public String generateAccessToken(UserEntity user) {
         Map<String, Object> claims = new HashMap<String, Object>();
